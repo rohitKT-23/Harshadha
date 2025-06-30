@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.pyo
+*.pkl
+*.pickle
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+speech2symbol_env/
+venv/
+env/
+.venv/
+
+# Data & Models
+*.csv
+*.tsv
+*.zip
+*.tar
+*.tar.gz
+*.h5
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.npz
+*.npy
+*.wav
+*.mp3
+
+# HuggingFace cache
+~/.cache/
+.cache/
+datasets/
+output/
+results/
+trained_models/
+checkpoints/
+wandb/
+evaluation_report.json
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# VSCode/IDE
+.vscode/
+.idea/
