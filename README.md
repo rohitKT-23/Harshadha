@@ -25,7 +25,7 @@ The system consists of four main components:
 
 ## 🚀 Quick Start
 
-### Installation
+### Local Development
 
 ```bash
 # Clone the repository
@@ -37,6 +37,9 @@ pip install -r requirements.txt
 
 # Download spaCy model for post-processing
 python -m spacy download en_core_web_sm
+
+# Run the API
+python app.py
 ```
 
 ### Basic Usage
@@ -54,6 +57,69 @@ python main.py demo --text "two plus three equals five"
 # Show example conversions
 python main.py examples
 ```
+
+### 🚀 Production Deployment
+
+**Deploy to production so anyone can access your API:**
+
+#### Option 1: Automated Deployment (Recommended)
+```bash
+# Run the deployment script
+python deploy.py
+
+# Or on Windows
+deploy.bat
+```
+
+#### Option 2: Manual Deployment
+
+**Heroku (Free Tier):**
+```bash
+# Install Heroku CLI
+# Download from: https://devcenter.heroku.com/articles/heroku-cli
+
+# Deploy
+heroku login
+heroku create your-app-name
+git init
+git add .
+git commit -m "Initial deployment"
+git push heroku main
+heroku open
+```
+
+**Railway (Free Tier):**
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Deploy
+railway login
+railway init
+railway up
+```
+
+**Render (Free Tier):**
+1. Go to [render.com](https://render.com)
+2. Sign up with GitHub
+3. Click "New Web Service"
+4. Connect your repository
+5. Set build command: `pip install -r requirements.txt`
+6. Set start command: `gunicorn app:app`
+7. Deploy!
+
+**Google Cloud Run (Free Tier):**
+```bash
+# Install Google Cloud CLI
+# Download from: https://cloud.google.com/sdk/docs/install
+
+# Deploy
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+gcloud run deploy speech2symbol-api --source . --platform managed --region us-central1 --allow-unauthenticated --memory 2Gi --cpu 2
+```
+
+📚 **For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)**
 
 ## 📊 Training Strategy
 

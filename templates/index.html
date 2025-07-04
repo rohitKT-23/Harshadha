@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech-to-Symbol Converter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+        }
+        input[type="file"] {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+        .loading {
+            text-align: center;
+            color: #ffd700;
+        }
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .success {
+            color: #51cf66;
+            background: rgba(81, 207, 102, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Speech-to-Symbol Converter</h1>
+        
+        <!-- Text Conversion Section -->
+        <div class="section">
+            <h2>📝 Text Conversion</h2>
+            <div class="input-group">
+                <label for="textInput">Enter text to convert:</label>
+                <textarea id="textInput" rows="4" placeholder="Example: two plus three equals five"></textarea>
+            </div>
+            <button onclick="convertText()">Convert Text</button>
+            <div id="textResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Audio Upload Section -->
+        <div class="section">
+            <h2>🎵 Audio Upload</h2>
+            <div class="input-group">
+                <label for="audioFile">Select audio file:</label>
+                <input type="file" id="audioFile" accept=".wav,.mp3,.flac,.m4a,.ogg,.webm">
+            </div>
+            <button onclick="convertAudio()">Convert Audio</button>
+            <div id="audioResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Batch Processing Section -->
+        <div class="section">
+            <h2>📦 Batch Processing</h2>
+            <div class="input-group">
+                <label for="batchInput">Enter multiple texts (one per line):</label>
+                <textarea id="batchInput" rows="4" placeholder="two plus three&#10;ten percent&#10;send email at company dot com"></textarea>
+            </div>
+            <button onclick="convertBatch()">Convert Batch</button>
+            <div id="batchResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- API Status -->
+        <div class="section">
+            <h2>📊 API Status</h2>
+            <button onclick="checkHealth()">Check Health</button>
+            <div id="healthResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                return await response.json();
+            } catch (error) {
+                throw new Error(`Request failed: ${error.message}`);
+            }
+        }
+
+        async function convertText() {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) {
+                alert('Please enter some text');
+                return;
+            }
+
+            const resultDiv = document.getElementById('textResult');
+            resultDiv.innerHTML = '<div class="loading">Converting text...</div>';
+            resultDiv.style.display = 'block';
+
+            try {
+                const result = await makeRequest(`${API_BASE}/convert/text`, {
+                    method: 'POST',
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (result.status === 'success') {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>✅ Conversion Successful!</strong><br>
+                            <strong>Input:</strong> ${result.input_text}<br>
+                            <strong>Output:</strong> ${result.final_output}<br>
+                            <strong>Conversions:</strong> ${result.total_conversions}<br>
+                            <strong>Processing Time:</strong> ${result.processing_time.toFixed(3)}s
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function convertAudio() {
+            const fileInput = document.getElementById('audioFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an audio file');
+                return;
+            }
+
+            const resultDiv = document.getElementById('audioResult');
+            resultDiv.innerHTML = '<div class="loading">Processing audio...</div>';
+            resultDiv.style.display = 'block';
+
+            try {
+                const formData = new FormData();
+                formData.append('audio', file);
+
+                const response = await fetch(`${API_BASE}/convert/audio`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>✅ Audio Processing Successful!</strong><br>
+                            <strong>File:</strong> ${result.original_filename}<br>
+                            <strong>Raw Transcription:</strong> ${result.raw_transcription}<br>
+                            <strong>Final Output:</strong> ${result.final_output}<br>
+                            <strong>Conversions:</strong> ${result.total_conversions}<br>
+                            <strong>Processing Time:</strong> ${result.processing_time.toFixed(3)}s
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function convertBatch() {
+            const text = document.getElementById('batchInput').value.trim();
+            if (!text) {
+                alert('Please enter some texts');
+                return;
+            }
+
+            const texts = text.split('\n').filter(t => t.trim());
+            if (texts.length === 0) {
+                alert('Please enter at least one text');
+                return;
+            }
+
+            const resultDiv = document.getElementById('batchResult');
+            resultDiv.innerHTML = '<div class="loading">Processing batch...</div>';
+            resultDiv.style.display = 'block';
+
+            try {
+                const result = await makeRequest(`${API_BASE}/convert/batch`, {
+                    method: 'POST',
+                    body: JSON.stringify({ texts: texts })
+                });
+
+                if (result.status === 'success') {
+                    let output = `<div class="success">
+                        <strong>✅ Batch Processing Complete!</strong><br>
+                        <strong>Total:</strong> ${result.batch_size} texts<br>
+                        <strong>Successful:</strong> ${result.successful}<br>
+                        <strong>Failed:</strong> ${result.failed}<br>
+                        <strong>Total Conversions:</strong> ${result.total_conversions}<br><br>
+                        <strong>Results:</strong><br>
+                    `;
+
+                    result.results.forEach((item, index) => {
+                        if (item.status === 'success') {
+                            output += `${index + 1}. "${item.input_text}" → "${item.final_output}" (${item.total_conversions} conversions)<br>`;
+                        } else {
+                            output += `${index + 1}. "${item.input_text}" → Error: ${item.error}<br>`;
+                        }
+                    });
+
+                    output += '</div>';
+                    resultDiv.innerHTML = output;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function checkHealth() {
+            const resultDiv = document.getElementById('healthResult');
+            resultDiv.innerHTML = '<div class="loading">Checking API health...</div>';
+            resultDiv.style.display = 'block';
+
+            try {
+                const result = await makeRequest(`${API_BASE}/health`);
+                
+                if (result.status === 'healthy') {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>✅ API is Healthy!</strong><br>
+                            <strong>Status:</strong> ${result.status}<br>
+                            <strong>Pipeline Ready:</strong> ${result.pipeline_ready}<br>
+                            <strong>Version:</strong> ${result.version}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ API Health Check Failed: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Check health on page load
+        window.onload = function() {
+            checkHealth();
+        };
+    </script>
+</body>
+</html> 
