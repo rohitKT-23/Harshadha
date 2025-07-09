@@ -18,7 +18,7 @@ import logging
 sys.path.append(str(Path(__file__).parent.parent))
 
 from models.whisper_trainer import OperatorWhisperTrainer, OperatorTrainingConfig
-from postprocessing.symbol_converter import ContextAwareSymbolConverter
+from postprocessing.symbol_converter import ComprehensiveSymbolConverter
 from data.dataset_loader import OperatorDatasetLoader
 
 import torch
@@ -48,7 +48,7 @@ class ComprehensiveEvaluator:
         
         # Initialize post-processor
         if use_postprocessing:
-            self.converter = ContextAwareSymbolConverter(use_spacy=True)
+            self.converter = ComprehensiveSymbolConverter()
         
         # Initialize metrics
         self.wer_metric = evaluate.load("wer")

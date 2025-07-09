@@ -14,7 +14,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from data.dataset_loader import OperatorDatasetLoader
 from models.whisper_trainer import OperatorWhisperTrainer, OperatorTrainingConfig
-from postprocessing.symbol_converter import ContextAwareSymbolConverter
+from postprocessing.symbol_converter import ComprehensiveSymbolConverter
 
 import torch
 import wandb
@@ -150,7 +150,7 @@ def evaluate_with_postprocessing(args, trainer, eval_dataset, dataset_loader):
     logger.info("Evaluating with post-processing...")
     
     # Initialize post-processor
-    converter = ContextAwareSymbolConverter(use_spacy=True)
+    converter = ComprehensiveSymbolConverter()
     
     # Generate predictions for a subset
     sample_size = min(100, len(eval_dataset))
@@ -179,9 +179,7 @@ def evaluate_with_postprocessing(args, trainer, eval_dataset, dataset_loader):
         )[0]
         
         # Apply post-processing
-        processed_prediction, metadata = converter.convert_text(
-            raw_prediction, confidence_threshold=args.confidence_threshold
-        )
+        processed_prediction, metadata = converter.convert_text(raw_prediction)
         
         predictions.append(raw_prediction)
         postprocessed_predictions.append(processed_prediction)

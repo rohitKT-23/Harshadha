@@ -22,7 +22,7 @@ sys.path.append(str(Path(__file__).parent / "speech2symbol"))
 
 from speech2symbol.scripts.train import main as train_main
 from speech2symbol.scripts.evaluate import main as evaluate_main
-from speech2symbol.postprocessing.symbol_converter import ContextAwareSymbolConverter
+from speech2symbol.postprocessing.symbol_converter import ComprehensiveSymbolConverter
 
 try:
     from speech2symbol.pipeline.audio_processor import Speech2SymbolPipeline
@@ -37,19 +37,19 @@ def demo_conversion(text: str, model_path: str | None = None):
     logger.info("=== Speech-to-Symbol Conversion Demo ===")
     
     # Initialize the post-processing converter
-    converter = ContextAwareSymbolConverter(use_spacy=True)
+    converter = ComprehensiveSymbolConverter()
     
     logger.info(f"Input text: '{text}'")
     
     # Convert the text
-    converted_text, metadata = converter.convert_text(text, confidence_threshold=0.7)
+    converted_text, metadata = converter.convert_text(text)
     
     logger.info(f"Converted text: '{converted_text}'")
     
     if metadata['conversions']:
         logger.info("Conversions made:")
         for conv in metadata['conversions']:
-            logger.info(f"  '{conv['original']}' -> '{conv['converted']}' (confidence: {conv['confidence']:.2f})")
+            logger.info(f"  '{conv['original']}' -> '{conv['converted']}' (priority: {conv['priority']})")
     else:
         logger.info("No conversions were made.")
     
@@ -75,10 +75,10 @@ def process_audio_file(audio_path: str, model_path: str | None = None, confidenc
             if result['conversions_made']:
                 print("\n📋 Detailed Conversions:")
                 for conv in result['conversions_made']:
-                    print(f"  '{conv['original']}' → '{conv['converted']}' (confidence: {conv['confidence']:.2f})")
+                    print(f"  '{conv['original']}' → '{conv['converted']}' (priority: {conv['priority']})")
             
             if result['total_conversions'] > 0:
-                print(f"📊 Average Confidence: {result['average_confidence']:.2f}")
+                print(f"📊 Total Conversions: {result['total_conversions']}")
                 
         else:
             logger.error(f"Processing failed: {result.get('error', 'Unknown error')}")
@@ -104,7 +104,7 @@ def show_examples():
     ]
     
     print("\n=== Example Conversions ===")
-    converter = ContextAwareSymbolConverter(use_spacy=True)
+    converter = ComprehensiveSymbolConverter()
     
     for example in examples:
         converted, _ = converter.convert_text(example)

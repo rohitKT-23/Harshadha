@@ -16,7 +16,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from postprocessing.symbol_converter import ContextAwareSymbolConverter
+from postprocessing.symbol_converter import ComprehensiveSymbolConverter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ class Speech2SymbolPipeline:
         self._setup_asr_pipeline()
         
         # Initialize symbol converter
-        self.symbol_converter = ContextAwareSymbolConverter(use_spacy=True)
+        self.symbol_converter = ComprehensiveSymbolConverter()
         
         logger.info("Pipeline initialized successfully!")
     
@@ -153,9 +153,7 @@ class Speech2SymbolPipeline:
         """Convert spoken operators to symbols"""
         logger.info(f"Converting symbols in: {text}")
         
-        converted_text, metadata = self.symbol_converter.convert_text(
-            text, confidence_threshold=confidence_threshold
-        )
+        converted_text, metadata = self.symbol_converter.convert_text(text)
         
         logger.info(f"Converted: {converted_text}")
         
@@ -164,7 +162,7 @@ class Speech2SymbolPipeline:
             "converted_text": converted_text,
             "conversions": metadata.get("conversions", []),
             "total_conversions": len(metadata.get("conversions", [])),
-            "confidence_scores": [conv["confidence"] for conv in metadata.get("conversions", [])]
+            "priority_scores": [conv["priority"] for conv in metadata.get("conversions", [])]
         }
     
     def process_audio_complete(
@@ -200,7 +198,7 @@ class Speech2SymbolPipeline:
             "final_output": conversion_result["converted_text"],
             "conversions_made": conversion_result["conversions"],
             "total_conversions": conversion_result["total_conversions"],
-            "average_confidence": np.mean(conversion_result["confidence_scores"]) if conversion_result["confidence_scores"] else 0.0
+            "average_priority": np.mean(conversion_result["priority_scores"]) if conversion_result["priority_scores"] else 0.0
         }
         
         # Log results

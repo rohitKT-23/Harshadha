@@ -14,9 +14,9 @@ def test_old_converter():
     try:
         # Add speech2symbol to path
         sys.path.append('speech2symbol')
-        from postprocessing.symbol_converter import ContextAwareSymbolConverter
+        from postprocessing.symbol_converter import ComprehensiveSymbolConverter
         
-        converter = ContextAwareSymbolConverter(use_spacy=True)
+        converter = ComprehensiveSymbolConverter()
         print("✅ Old converter created successfully")
         
         # Test conversion
