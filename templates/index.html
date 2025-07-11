@@ -1,146 +1,1025 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speech-to-Symbol Converter</title>
+    <meta name="description" content="Transform your words into symbols with professional elegance" />
+    <meta name="author" content="Lovable" />
+
+    <meta property="og:title" content="Speech-to-Symbol Converter" />
+    <meta property="og:description" content="Transform your words into symbols with professional elegance" />
+    <meta property="og:type" content="website" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary: hsl(250, 100%, 65%);
+            --primary-dark: hsl(250, 90%, 55%);
+            --secondary: hsl(210, 100%, 60%);
+            --accent: hsl(160, 75%, 55%);
+            --background: hsl(220, 25%, 8%);
+            --surface: hsl(220, 20%, 12%);
+            --surface-light: hsl(220, 15%, 18%);
+            --text-primary: hsl(0, 0%, 95%);
+            --text-secondary: hsl(0, 0%, 70%);
+            --text-muted: hsl(0, 0%, 50%);
+            --border: hsl(220, 15%, 25%);
+            --success: hsl(142, 76%, 36%);
+            --error: hsl(0, 84%, 60%);
+            --warning: hsl(38, 92%, 50%);
+            
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow: rgba(0, 0, 0, 0.5);
+            --glow: rgba(138, 43, 226, 0.3);
+        }
+
+        [data-theme="light"] {
+            --primary: hsl(250, 100%, 55%);
+            --primary-dark: hsl(250, 90%, 45%);
+            --secondary: hsl(210, 100%, 50%);
+            --accent: hsl(160, 75%, 45%);
+            --background: hsl(220, 25%, 96%);
+            --surface: hsl(220, 20%, 98%);
+            --surface-light: hsl(220, 15%, 94%);
+            --text-primary: hsl(0, 0%, 15%);
+            --text-secondary: hsl(0, 0%, 30%);
+            --text-muted: hsl(0, 0%, 50%);
+            --border: hsl(220, 15%, 85%);
+            --success: hsl(142, 76%, 36%);
+            --error: hsl(0, 84%, 50%);
+            --warning: hsl(38, 92%, 40%);
+            
+            --glass: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --shadow: rgba(0, 0, 0, 0.15);
+            --glow: rgba(138, 43, 226, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+                linear-gradient(135deg, var(--background) 0%, hsl(220, 20%, 10%) 100%);
             min-height: 100vh;
-            color: white;
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 0.5s ease;
         }
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+        [data-theme="light"] body {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(138, 43, 226, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+                linear-gradient(135deg, var(--background) 0%, hsl(220, 20%, 98%) 100%);
         }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-        }
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], textarea {
+
+        /* Enhanced animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            font-size: 16px;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(138, 43, 226, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.08) 0%, transparent 25%);
+            animation: backgroundFlow 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+            transition: opacity 0.5s ease;
         }
-        input[type="file"] {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 8px;
+
+        @keyframes backgroundFlow {
+            0%, 100% { 
+                transform: translateX(0) translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            25% { 
+                transform: translateX(20px) translateY(-20px) scale(1.1) rotate(1deg);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: translateX(-10px) translateY(15px) scale(0.95) rotate(-1deg);
+                opacity: 1;
+            }
+            75% { 
+                transform: translateX(15px) translateY(10px) scale(1.05) rotate(0.5deg);
+                opacity: 0.9;
+            }
+        }
+
+        /* Floating particles animation */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(138, 43, 226, 0.3), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(59, 130, 246, 0.3), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(16, 185, 129, 0.3), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(138, 43, 226, 0.2), transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: particleFloat 25s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.6;
         }
-        button {
-            background: #4CAF50;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
+
+        @keyframes particleFloat {
+            0% { transform: translateY(0px) translateX(0px); }
+            100% { transform: translateY(-100px) translateX(50px); }
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.75rem;
             cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            animation: themeToggleEntrance 0.8s ease-out 0.5s both;
         }
-        button:hover {
-            background: #45a049;
+
+        @keyframes themeToggleEntrance {
+            0% {
+                transform: translateY(-50px) rotate(-180deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
         }
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            white-space: pre-wrap;
+
+        .theme-toggle:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 15px 35px var(--shadow);
+            border-color: var(--primary);
         }
-        .loading {
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            border-radius: 50px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .theme-toggle:hover::before {
+            opacity: 0.3;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            animation: containerSlideUp 1s ease-out;
+        }
+
+        @keyframes containerSlideUp {
+            0% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Enhanced header */
+        .header {
             text-align: center;
-            color: #ffd700;
+            margin-bottom: 3rem;
+            position: relative;
+            animation: headerFadeIn 1.2s ease-out 0.3s both;
         }
-        .error {
-            color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
-            padding: 10px;
-            border-radius: 8px;
+
+        @keyframes headerFadeIn {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        .success {
-            color: #51cf66;
-            background: rgba(81, 207, 102, 0.1);
-            padding: 10px;
-            border-radius: 8px;
+
+        .header h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+            animation: titleGlow 3s ease-in-out infinite alternate, titleFloat 6s ease-in-out infinite;
+            cursor: default;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 20px rgba(138, 43, 226, 0.3)); }
+            100% { filter: drop-shadow(0 0 40px rgba(138, 43, 226, 0.6)); }
+        }
+
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 400;
+            animation: subtitleSlide 1s ease-out 0.6s both;
+        }
+
+        @keyframes subtitleSlide {
+            0% {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Enhanced main grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Enhanced card styles */
+        .card {
+            background: linear-gradient(145deg, var(--glass), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            animation: cardSlideIn 0.8s ease-out both;
+            transform-style: preserve-3d;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes cardSlideIn {
+            0% {
+                transform: translateY(80px) rotateX(20deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0) rotateX(0deg);
+                opacity: 1;
+            }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--primary), transparent);
+            animation: cardRotate 20s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        @keyframes cardRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .card:hover {
+            transform: translateY(-12px) rotateX(5deg) rotateY(5deg);
+            border-color: rgba(138, 43, 226, 0.4);
+            box-shadow: 
+                0 30px 60px var(--shadow),
+                0 0 0 1px rgba(138, 43, 226, 0.3),
+                0 0 50px rgba(138, 43, 226, 0.15);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover::after {
+            opacity: 0.1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            animation: cardHeaderSlide 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes cardHeaderSlide {
+            0% {
+                transform: translateX(-30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .card-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            transition: color 0.3s ease;
+        }
+
+        /* Enhanced form elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+            animation: formGroupSlide 0.6s ease-out both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+
+        @keyframes formGroupSlide {
+            0% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .form-label::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .form-group:hover .form-label::before {
+            transform: translateX(5px);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-file {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            resize: vertical;
+            position: relative;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-file:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 
+                0 0 0 3px rgba(138, 43, 226, 0.2),
+                0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-file {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-file:hover {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced button styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            min-height: 48px;
+            animation: buttonSlideUp 0.6s ease-out both;
+        }
+
+        @keyframes buttonSlideUp {
+            0% {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 15px 35px rgba(138, 43, 226, 0.4),
+                0 0 30px rgba(138, 43, 226, 0.2);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover::after {
+            opacity: 1;
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+            transition: all 0.1s ease;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--surface-light), var(--surface));
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Enhanced result display */
+        .result {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            animation: resultSlideIn 0.5s ease-out forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes resultSlideIn {
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: resultShimmer 2s ease-in-out;
+        }
+
+        @keyframes resultShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .result.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--text-primary);
+            animation: successPulse 0.6s ease-out, resultSlideIn 0.5s ease-out forwards;
+        }
+
+        @keyframes successPulse {
+            0%, 100% { border-color: rgba(16, 185, 129, 0.3); }
+            50% { border-color: rgba(16, 185, 129, 0.6); }
+        }
+
+        .result.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--text-primary);
+            animation: errorShake 0.5s ease-in-out, resultSlideIn 0.5s ease-out forwards;
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .result.loading {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: loadingPulse 2s ease-in-out infinite, resultSlideIn 0.5s ease-out forwards;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { 
+                background: rgba(138, 43, 226, 0.1);
+                border-color: rgba(138, 43, 226, 0.3);
+            }
+            50% { 
+                background: rgba(138, 43, 226, 0.2);
+                border-color: rgba(138, 43, 226, 0.5);
+            }
+        }
+
+        /* Enhanced loading spinner */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(138, 43, 226, 0.3);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite, spinnerGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes spinnerGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(138, 43, 226, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(138, 43, 226, 0.6); }
+        }
+
+        /* Status section */
+        .status-section {
+            grid-column: 1 / -1;
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            position: relative;
+        }
+
+        .status-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--success), var(--accent), var(--success));
+            background-size: 200% 100%;
+            animation: statusGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes statusGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Result text formatting */
+        .result-content {
+            white-space: pre-wrap;
+            word-break: break-word;
+            animation: textTypewriter 1s ease-out;
+        }
+
+        @keyframes textTypewriter {
+            0% { width: 0; opacity: 0; }
+            1% { opacity: 1; }
+            100% { width: 100%; opacity: 1; }
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-right: 0.5rem;
+            position: relative;
+        }
+
+        .result-label::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            animation: underlineExpand 0.8s ease-out 0.5s forwards;
+        }
+
+        @keyframes underlineExpand {
+            to { transform: scaleX(1); }
+        }
+
+        .result-value {
+            color: var(--text-secondary);
+        }
+
+        .result-separator {
+            margin: 0.75rem 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-separator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: separatorSlide 2s ease-in-out infinite;
+        }
+
+        @keyframes separatorSlide {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .header p {
+                font-size: 1.1rem;
+            }
+
+            .card-title {
+                font-size: 1.25rem;
+            }
+
+            .btn {
+                padding: 0.875rem 1.5rem;
+            }
+
+            .theme-toggle {
+                top: 1rem;
+                right: 1rem;
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 1.25rem;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .card-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles for accessibility */
+        .btn:focus-visible,
+        .form-input:focus-visible,
+        .form-textarea:focus-visible,
+        .form-file:focus-visible,
+        .theme-toggle:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Scroll animations */
+        @keyframes scrollReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            animation: scrollReveal 0.8s ease-out forwards;
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="themeIcon">🌙</span>
+    </button>
+
     <div class="container">
-        <h1>🎤 Speech-to-Symbol Converter</h1>
-        
-        <!-- Text Conversion Section -->
-        <div class="section">
-            <h2>📝 Text Conversion</h2>
-            <div class="input-group">
-                <label for="textInput">Enter text to convert:</label>
-                <textarea id="textInput" rows="4" placeholder="Example: two plus three equals five"></textarea>
-            </div>
-            <button onclick="convertText()">Convert Text</button>
-            <div id="textResult" class="result" style="display: none;"></div>
+        <!-- Header -->
+        <div class="header">
+            <h1>Speech-to-Symbol Converter</h1>
+            <p>Transform your words into symbols with professional precision and elegance</p>
         </div>
 
-        <!-- Audio Upload Section -->
-        <div class="section">
-            <h2>🎵 Audio Upload</h2>
-            <div class="input-group">
-                <label for="audioFile">Select audio file:</label>
-                <input type="file" id="audioFile" accept=".wav,.mp3,.flac,.m4a,.ogg,.webm">
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Text Conversion Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📝</div>
+                    <h2 class="card-title">Text Conversion</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label for="textInput" class="form-label">Enter text to convert</label>
+                    <textarea 
+                        id="textInput" 
+                        class="form-textarea" 
+                        rows="4" 
+                        placeholder="Example: two plus three equals five"
+                    ></textarea>
+                </div>
+                
+                <button class="btn" onclick="convertText()">Convert Text</button>
+                
+                <div id="textResult" class="result" style="display: none;"></div>
             </div>
-            <button onclick="convertAudio()">Convert Audio</button>
-            <div id="audioResult" class="result" style="display: none;"></div>
-        </div>
 
-        <!-- Batch Processing Section -->
-        <div class="section">
-            <h2>📦 Batch Processing</h2>
-            <div class="input-group">
-                <label for="batchInput">Enter multiple texts (one per line):</label>
-                <textarea id="batchInput" rows="4" placeholder="two plus three&#10;ten percent&#10;send email at company dot com"></textarea>
+            <!-- Audio Upload Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🎵</div>
+                    <h2 class="card-title">Audio Processing</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label for="audioFile" class="form-label">Select audio file</label>
+                    <input 
+                        type="file" 
+                        id="audioFile" 
+                        class="form-file" 
+                        accept=".wav,.mp3,.flac,.m4a,.ogg,.webm"
+                    >
+                </div>
+                
+                <button class="btn" onclick="convertAudio()">Process Audio</button>
+                
+                <div id="audioResult" class="result" style="display: none;"></div>
             </div>
-            <button onclick="convertBatch()">Convert Batch</button>
-            <div id="batchResult" class="result" style="display: none;"></div>
-        </div>
 
-        <!-- API Status -->
-        <div class="section">
-            <h2>📊 API Status</h2>
-            <button onclick="checkHealth()">Check Health</button>
-            <div id="healthResult" class="result" style="display: none;"></div>
+            <!-- Batch Processing Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📦</div>
+                    <h2 class="card-title">Batch Processing</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label for="batchInput" class="form-label">Enter multiple texts (one per line)</label>
+                    <textarea 
+                        id="batchInput" 
+                        class="form-textarea" 
+                        rows="4" 
+                        placeholder="two plus three&#10;ten percent&#10;send email at company dot com"
+                    ></textarea>
+                </div>
+                
+                <button class="btn" onclick="convertBatch()">Process Batch</button>
+                
+                <div id="batchResult" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- API Status Card -->
+            <div class="card status-section">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <h2 class="card-title">System Status</h2>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="checkHealth()">Check System Health</button>
+                
+                <div id="healthResult" class="result" style="display: none;"></div>
+            </div>
         </div>
     </div>
 
     <script>
         const API_BASE = window.location.origin;
 
+        // Theme toggle functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            // Add theme transition effect
+            body.style.transition = 'all 0.5s ease';
+            setTimeout(() => {
+                body.style.transition = '';
+            }, 500);
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            body.setAttribute('data-theme', savedTheme);
+            themeIcon.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+        }
+
+        // Enhanced request function with loading states
         async function makeRequest(url, options = {}) {
             try {
                 const response = await fetch(url, {
@@ -156,6 +1035,34 @@
             }
         }
 
+        function showLoading(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    ${message}
+                </div>
+            `;
+            element.style.display = 'block';
+            element.classList.add('loading');
+        }
+
+        function showSuccess(elementId, content) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="success result-content">${content}</div>`;
+            element.style.display = 'block';
+            element.classList.remove('loading');
+            element.classList.add('success');
+        }
+
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="error result-content">❌ Error: ${message}</div>`;
+            element.style.display = 'block';
+            element.classList.remove('loading');
+            element.classList.add('error');
+        }
+
         async function convertText() {
             const text = document.getElementById('textInput').value.trim();
             if (!text) {
@@ -163,9 +1070,7 @@
                 return;
             }
 
-            const resultDiv = document.getElementById('textResult');
-            resultDiv.innerHTML = '<div class="loading">Converting text...</div>';
-            resultDiv.style.display = 'block';
+            showLoading('textResult', 'Converting text...');
 
             try {
                 const result = await makeRequest(`${API_BASE}/convert/text`, {
@@ -174,20 +1079,20 @@
                 });
 
                 if (result.status === 'success') {
-                    resultDiv.innerHTML = `
-                        <div class="success">
-                            <strong>✅ Conversion Successful!</strong><br>
-                            <strong>Input:</strong> ${result.input_text}<br>
-                            <strong>Output:</strong> ${result.final_output}<br>
-                            <strong>Conversions:</strong> ${result.total_conversions}<br>
-                            <strong>Processing Time:</strong> ${result.processing_time.toFixed(3)}s
-                        </div>
+                    const content = `
+                        <div class="result-label">✅ Conversion Successful!</div>
+                        <div class="result-separator"></div>
+                        <div><span class="result-label">Input:</span><span class="result-value">${result.input_text}</span></div>
+                        <div><span class="result-label">Output:</span><span class="result-value">${result.final_output}</span></div>
+                        <div><span class="result-label">Conversions:</span><span class="result-value">${result.total_conversions}</span></div>
+                        <div><span class="result-label">Processing Time:</span><span class="result-value">${result.processing_time.toFixed(3)}s</span></div>
                     `;
+                    showSuccess('textResult', content);
                 } else {
-                    resultDiv.innerHTML = `<div class="error">❌ Error: ${result.error}</div>`;
+                    showError('textResult', result.error);
                 }
             } catch (error) {
-                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                showError('textResult', error.message);
             }
         }
 
@@ -200,9 +1105,7 @@
                 return;
             }
 
-            const resultDiv = document.getElementById('audioResult');
-            resultDiv.innerHTML = '<div class="loading">Processing audio...</div>';
-            resultDiv.style.display = 'block';
+            showLoading('audioResult', 'Processing audio...');
 
             try {
                 const formData = new FormData();
@@ -216,21 +1119,21 @@
                 const result = await response.json();
 
                 if (result.status === 'success') {
-                    resultDiv.innerHTML = `
-                        <div class="success">
-                            <strong>✅ Audio Processing Successful!</strong><br>
-                            <strong>File:</strong> ${result.original_filename}<br>
-                            <strong>Raw Transcription:</strong> ${result.raw_transcription}<br>
-                            <strong>Final Output:</strong> ${result.final_output}<br>
-                            <strong>Conversions:</strong> ${result.total_conversions}<br>
-                            <strong>Processing Time:</strong> ${result.processing_time.toFixed(3)}s
-                        </div>
+                    const content = `
+                        <div class="result-label">✅ Audio Processing Successful!</div>
+                        <div class="result-separator"></div>
+                        <div><span class="result-label">File:</span><span class="result-value">${result.original_filename}</span></div>
+                        <div><span class="result-label">Raw Transcription:</span><span class="result-value">${result.raw_transcription}</span></div>
+                        <div><span class="result-label">Final Output:</span><span class="result-value">${result.final_output}</span></div>
+                        <div><span class="result-label">Conversions:</span><span class="result-value">${result.total_conversions}</span></div>
+                        <div><span class="result-label">Processing Time:</span><span class="result-value">${result.processing_time.toFixed(3)}s</span></div>
                     `;
+                    showSuccess('audioResult', content);
                 } else {
-                    resultDiv.innerHTML = `<div class="error">❌ Error: ${result.error}</div>`;
+                    showError('audioResult', result.error);
                 }
             } catch (error) {
-                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                showError('audioResult', error.message);
             }
         }
 
@@ -247,9 +1150,7 @@
                 return;
             }
 
-            const resultDiv = document.getElementById('batchResult');
-            resultDiv.innerHTML = '<div class="loading">Processing batch...</div>';
-            resultDiv.style.display = 'block';
+            showLoading('batchResult', 'Processing batch...');
 
             try {
                 const result = await makeRequest(`${API_BASE}/convert/batch`, {
@@ -258,62 +1159,78 @@
                 });
 
                 if (result.status === 'success') {
-                    let output = `<div class="success">
-                        <strong>✅ Batch Processing Complete!</strong><br>
-                        <strong>Total:</strong> ${result.batch_size} texts<br>
-                        <strong>Successful:</strong> ${result.successful}<br>
-                        <strong>Failed:</strong> ${result.failed}<br>
-                        <strong>Total Conversions:</strong> ${result.total_conversions}<br><br>
-                        <strong>Results:</strong><br>
+                    let content = `
+                        <div class="result-label">✅ Batch Processing Complete!</div>
+                        <div class="result-separator"></div>
+                        <div><span class="result-label">Total:</span><span class="result-value">${result.batch_size} texts</span></div>
+                        <div><span class="result-label">Successful:</span><span class="result-value">${result.successful}</span></div>
+                        <div><span class="result-label">Failed:</span><span class="result-value">${result.failed}</span></div>
+                        <div><span class="result-label">Total Conversions:</span><span class="result-value">${result.total_conversions}</span></div>
+                        <div class="result-separator"></div>
+                        <div class="result-label">Results:</div>
                     `;
 
                     result.results.forEach((item, index) => {
                         if (item.status === 'success') {
-                            output += `${index + 1}. "${item.input_text}" → "${item.final_output}" (${item.total_conversions} conversions)<br>`;
+                            content += `<div>${index + 1}. "${item.input_text}" → "${item.final_output}" (${item.total_conversions} conversions)</div>`;
                         } else {
-                            output += `${index + 1}. "${item.input_text}" → Error: ${item.error}<br>`;
+                            content += `<div>${index + 1}. "${item.input_text}" → Error: ${item.error}</div>`;
                         }
                     });
 
-                    output += '</div>';
-                    resultDiv.innerHTML = output;
+                    showSuccess('batchResult', content);
                 } else {
-                    resultDiv.innerHTML = `<div class="error">❌ Error: ${result.error}</div>`;
+                    showError('batchResult', result.error);
                 }
             } catch (error) {
-                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                showError('batchResult', error.message);
             }
         }
 
         async function checkHealth() {
-            const resultDiv = document.getElementById('healthResult');
-            resultDiv.innerHTML = '<div class="loading">Checking API health...</div>';
-            resultDiv.style.display = 'block';
+            showLoading('healthResult', 'Checking system health...');
 
             try {
                 const result = await makeRequest(`${API_BASE}/health`);
                 
                 if (result.status === 'healthy') {
-                    resultDiv.innerHTML = `
-                        <div class="success">
-                            <strong>✅ API is Healthy!</strong><br>
-                            <strong>Status:</strong> ${result.status}<br>
-                            <strong>Pipeline Ready:</strong> ${result.pipeline_ready}<br>
-                            <strong>Version:</strong> ${result.version}
-                        </div>
+                    const content = `
+                        <div class="result-label">✅ System is Healthy!</div>
+                        <div class="result-separator"></div>
+                        <div><span class="result-label">Status:</span><span class="result-value">${result.status}</span></div>
+                        <div><span class="result-label">Pipeline Ready:</span><span class="result-value">${result.pipeline_ready}</span></div>
+                        <div><span class="result-label">Version:</span><span class="result-value">${result.version}</span></div>
                     `;
+                    showSuccess('healthResult', content);
                 } else {
-                    resultDiv.innerHTML = `<div class="error">❌ API Health Check Failed: ${result.error}</div>`;
+                    showError('healthResult', `System Health Check Failed: ${result.error}`);
                 }
             } catch (error) {
-                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                showError('healthResult', error.message);
             }
         }
 
-        // Check health on page load
-        window.onload = function() {
+        // Scroll reveal animation
+        function addScrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('scroll-reveal');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.card').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Initialize everything on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            addScrollReveal();
             checkHealth();
-        };
+        });
     </script>
 </body>
-</html> 
+</html>

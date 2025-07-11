@@ -79,8 +79,7 @@ class TestSymbolConverter(unittest.TestCase):
         custom_rule = ConversionRule(
             pattern=r'\bhello\b',
             replacement='hi',
-            priority=10,
-            confidence_base=1.0
+            priority=10
         )
         
         self.converter.add_custom_rule(custom_rule)
